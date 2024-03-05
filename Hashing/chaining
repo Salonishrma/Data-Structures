@@ -1,0 +1,100 @@
+#include<iostream>
+using namespace std;
+//create a node for linklist
+class Node{
+    public:
+     int data;
+     Node*next; 
+};
+//now create a hash  table
+class HashTable{
+public:
+   Node** HT; //node of hashtable
+   HashTable();
+   int hash(int key); //calculate modulas
+   void insert(int key); //add value in hash table
+   int search(int key); //fun for searching
+   ~HashTable();
+};
+HashTable::HashTable()
+{
+    HT=new Node*[10]; //size of hashtable
+    for(int i=0;i<10;i++){
+        HT[i]=nullptr;
+    }
+}
+int HashTable::hash(int key){
+    return key%10;
+}
+void HashTable::insert(int key){
+    int hldx=hash(key);
+    Node*t=new Node;
+    t->data=key;
+    t->next=nullptr;
+    //case 1: no nodes in the linklist
+    if(HT[hldx]==nullptr){
+        HT[hldx]=t;
+    }
+    else{
+        Node*p=HT[hldx];
+        Node*q=HT[hldx];;
+        //traverse to find out the insert position
+        while(p && p->data<key){//p null nhi hona chaiy or p ka data insert krne vali key s kam ho
+         q=p;
+         p=p->next;
+        }
+    //case:insert position is first
+    if(q==HT[hldx]){
+        t->next=HT[hldx];
+        HT[hldx]=t;
+    }
+    else{
+        t->next=q->next;
+        q->next=t;
+    }
+}
+}
+
+int HashTable::search(int key) {
+	int hIdx = hash(key); //find te index 
+	Node* p = HT[hIdx]; //start searching at that particulr index
+	while (p){
+		if (p->data == key){
+			return p->data; //suppose 5,15,25 and we have to search 5 return else 5->next
+		}
+		p = p->next;
+	}
+	return -1;
+}
+
+HashTable::~HashTable() {
+	for (int i=0; i<10; i++){
+		Node* p = HT[i];
+		while (HT[i]){
+			HT[i] = HT[i]->next;
+			delete p;
+			p = HT[i];
+		}
+	}
+	delete [] HT;
+}
+
+int main() {
+	int A[] = {16, 12, 25, 39, 6, 122, 5, 68, 75};
+	int n = sizeof(A)/sizeof(A[0]);
+	cout<<n<<endl;
+	HashTable H;
+	for (int i=0; i<n; i++){
+		H.insert(A[i]);
+	}
+	cout << "Successful Search" << endl;
+	int key = 6;
+	int value = H.search(key);
+	cout << "Key: " << key << ", Value: " << value << endl;
+	cout << "Unsuccessful Search" << endl;
+	key = 95;
+	value = H.search(key);
+	cout << "Key: " << key << ", Value: " << value << endl;
+
+	return 0;
+}
